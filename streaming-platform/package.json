@@ -1,0 +1,17 @@
+{
+  "name": "@streaming-platform/source",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {},
+  "private": true,
+  "dependencies": {
+    "empty": "0.10.1"
+  },
+  "devDependencies": {
+    "@nx/nest": "^22.0.3",
+    "@nx/next": "^22.0.3",
+    "@nx/node": "^22.0.3",
+    "@nx/workspace": "22.0.3",
+    "nx": "22.0.3"
+  }
+}
