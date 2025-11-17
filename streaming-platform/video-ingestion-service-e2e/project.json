@@ -1,0 +1,20 @@
+{
+  "name": "video-ingestion-service-e2e",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "implicitDependencies": ["video-ingestion-service"],
+  "targets": {
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
+      "options": {
+        "jestConfig": "video-ingestion-service-e2e/jest.config.cts",
+        "passWithNoTests": true
+      },
+      "dependsOn": [
+        "video-ingestion-service:build",
+        "video-ingestion-service:serve"
+      ]
+    }
+  }
+}
