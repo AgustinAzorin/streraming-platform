@@ -6,13 +6,19 @@
       "request": "launch",
       "name": "Debug auth-service with Nx",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "serve", "auth-service"],
+      "runtimeArgs": [
+        "nx",
+        "serve",
+        "auth-service"
+      ],
       "env": {
         "NODE_OPTIONS": "--inspect=9229"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/auth-service/dist/**/*.(m|c|)js",
@@ -24,13 +30,19 @@
       "request": "launch",
       "name": "Debug user-profile-service with Nx",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "serve", "user-profile-service"],
+      "runtimeArgs": [
+        "nx",
+        "serve",
+        "user-profile-service"
+      ],
       "env": {
         "NODE_OPTIONS": "--inspect=9230"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/user-profile-service/dist/**/*.(m|c|)js",
@@ -42,13 +54,19 @@
       "request": "launch",
       "name": "Debug video-ingestion-service with Nx",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "serve", "video-ingestion-service"],
+      "runtimeArgs": [
+        "nx",
+        "serve",
+        "video-ingestion-service"
+      ],
       "env": {
         "NODE_OPTIONS": "--inspect=9231"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/video-ingestion-service/dist/**/*.(m|c|)js",
@@ -60,13 +78,19 @@
       "request": "launch",
       "name": "Debug video-metadata-service with Nx",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "serve", "video-metadata-service"],
+      "runtimeArgs": [
+        "nx",
+        "serve",
+        "video-metadata-service"
+      ],
       "env": {
         "NODE_OPTIONS": "--inspect=9232"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/video-metadata-service/dist/**/*.(m|c|)js",
@@ -78,13 +102,19 @@
       "request": "launch",
       "name": "Debug streaming-gateway with Nx",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "serve", "streaming-gateway"],
+      "runtimeArgs": [
+        "nx",
+        "serve",
+        "streaming-gateway"
+      ],
       "env": {
         "NODE_OPTIONS": "--inspect=9233"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/streaming-gateway/dist/**/*.(m|c|)js",
@@ -96,13 +126,19 @@
       "request": "launch",
       "name": "Debug comments-service with Nx",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "serve", "comments-service"],
+      "runtimeArgs": [
+        "nx",
+        "serve",
+        "comments-service"
+      ],
       "env": {
         "NODE_OPTIONS": "--inspect=9234"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/comments-service/dist/**/*.(m|c|)js",
@@ -114,16 +150,46 @@
       "request": "launch",
       "name": "Debug search-service with Nx",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["nx", "serve", "search-service"],
+      "runtimeArgs": [
+        "nx",
+        "serve",
+        "search-service"
+      ],
       "env": {
         "NODE_OPTIONS": "--inspect=9235"
       },
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "sourceMaps": true,
       "outFiles": [
         "${workspaceFolder}/search-service/dist/**/*.(m|c|)js",
+        "!**/node_modules/**"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug video-processing-worker with Nx",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "nx",
+        "serve",
+        "video-processing-worker"
+      ],
+      "env": {
+        "NODE_OPTIONS": "--inspect=9236"
+      },
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceFolder}/video-processing-worker/dist/**/*.(m|c|)js",
         "!**/node_modules/**"
       ]
     }
