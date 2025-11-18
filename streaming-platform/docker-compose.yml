@@ -1,27 +1,206 @@
 version: "3.9"
 
 services:
+  # ---------------------------------------------------------
+  # DATABASES & SYSTEM SERVICES
+  # ---------------------------------------------------------
   postgres:
     image: postgres:15
+    container_name: postgres
     restart: always
-    container_name: pg
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
       POSTGRES_DB: streaming
+    ports:
+      - "5432:5432"
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - streaming
 
   redis:
     image: redis:7
     container_name: redis
+    restart: always
     ports:
       - "6379:6379"
+    networks:
+      - streaming
 
   clamav:
     image: clamav/clamav:latest
     container_name: clamav
+    restart: always
     ports:
       - "3310:3310"
+    networks:
+      - streaming
+
+  # ---------------------------------------------------------
+  # MICROSERVICES
+  # ---------------------------------------------------------
+  auth-service:
+    build:
+      context: .
+      dockerfile: auth-service/Dockerfile
+    container_name: auth-service
+    env_file:
+      - auth-service/.env
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://dev:dev@postgres:5432/streaming
+    depends_on:
+      - postgres
+    networks:
+      - streaming
+
+  user-profile-service:
+    build:
+      context: .
+      dockerfile: user-profile-service/Dockerfile
+    container_name: user-profile-service
+    env_file:
+      - user-profile-service/.env
+    ports:
+      - "3002:3002"
+    environment:
+      DATABASE_URL: postgresql://dev:dev@postgres:5432/streaming
+    depends_on:
+      - postgres
+    networks:
+      - streaming
+
+  video-ingestion-service:
+    build:
+      context: .
+    dockerfile: video-ingestion-service/Dockerfile
+    container_name: video-ingestion-service
+    env_file:
+      - video-ingestion-service/.env
+    ports:
+      - "3003:3003"
+    environment:
+      DATABASE_URL: postgresql://dev:dev@postgres:5432/streaming
+      REDIS_URL: redis://redis:6379
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: 3310
+    depends_on:
+      - postgres
+      - redis
+      - clamav
+    networks:
+      - streaming
+
+  video-metadata-service:
+    build:
+      context: .
+      dockerfile: video-metadata-service/Dockerfile
+    container_name: video-metadata-service
+    env_file:
+      - video-metadata-service/.env
+    ports:
+      - "3004:3004"
+    environment:
+      DATABASE_URL: postgresql://dev:dev@postgres:5432/streaming
+    depends_on:
+      - postgres
+    networks:
+      - streaming
+
+  streaming-gateway:
+    build:
+      context: .
+      dockerfile: streaming-gateway/Dockerfile
+    container_name: streaming-gateway
+    env_file:
+      - streaming-gateway/.env
+    ports:
+      - "3005:3005"
+    depends_on:
+      - auth-service
+      - video-metadata-service
+    networks:
+      - streaming
+
+  comments-service:
+    build:
+      context: .
+      dockerfile: comments-service/Dockerfile
+    container_name: comments-service
+    env_file:
+      - comments-service/.env
+    ports:
+      - "3006:3006"
+    environment:
+      DATABASE_URL: postgresql://dev:dev@postgres:5432/streaming
+    depends_on:
+      - postgres
+    networks:
+      - streaming
+
+  search-service:
+    build:
+      context: .
+      dockerfile: search-service/Dockerfile
+    container_name: search-service
+    env_file:
+      - search-service/.env
+    ports:
+      - "3007:3007"
+    environment:
+      DATABASE_URL: postgresql://dev:dev@postgres:5432/streaming
+    depends_on:
+      - postgres
+    networks:
+      - streaming
+
+  # ---------------------------------------------------------
+  # WORKER
+  # ---------------------------------------------------------
+  video-processing-worker:
+    build:
+      context: .
+      dockerfile: video-processing-worker/Dockerfile
+    container_name: video-processing-worker
+    env_file:
+      - video-processing-worker/.env
+    environment:
+      DATABASE_URL: postgresql://dev:dev@postgres:5432/streaming
+      REDIS_URL: redis://redis:6379
+      CLAMAV_HOST: clamav
+      CLAMAV_PORT: 3310
+    depends_on:
+      - redis
+      - postgres
+      - clamav
+    networks:
+      - streaming
+
+  # ---------------------------------------------------------
+  # FRONTEND
+  # ---------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - streaming-gateway
+      - auth-service
+      - video-metadata-service
+    networks:
+      - streaming
+
+# ---------------------------------------------------------
+# NETWORKS & VOLUMES
+# ---------------------------------------------------------
+networks:
+  streaming:
+    driver: bridge
+
+volumes:
+  postgres_data:

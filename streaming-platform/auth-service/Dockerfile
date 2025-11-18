@@ -1,46 +1,46 @@
-# ----------------------------------------------------------
-# 1) BUILD STAGE
-# ----------------------------------------------------------
+# ---------- STAGE 1: BUILD ----------
 FROM node:20-alpine AS builder
 
-# Set working directory
-WORKDIR /app
+WORKDIR /workspace
 
-# Copy root package files
-COPY package*.json ./
-COPY nx.json ./
-COPY tsconfig.base.json ./
+# dependencias del sistema necesarias
+RUN apk add --no-cache python3 make g++ git
 
-# Copy workspace libs and app source
+# copy solo archivos de package para cachear npm install
+COPY package.json package-lock.json ./
+# Nx files necesarios para build
+COPY nx.json tsconfig.base.json ./
+# copy codigo (apps + libs)
 COPY apps ./apps
 COPY libs ./libs
 
-# Install dependencies
-RUN npm install
+# instalar dependencias (producción + dev para build)
+RUN npm ci
 
-# Build the specific service
+# argumento para indicar qué servicio construir
 ARG SERVICE_NAME
-RUN npx nx build $SERVICE_NAME
+RUN npx nx build ${SERVICE_NAME} --skip-nx-cache
 
-# ----------------------------------------------------------
-# 2) PRODUCTION STAGE
-# ----------------------------------------------------------
+# ---------- STAGE 2: RUNTIME ----------
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copy from builder the dist output
+# instalar solo deps de producción
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+# copiar el build del servicio
 ARG SERVICE_NAME
-COPY --from=builder /app/dist/apps/${SERVICE_NAME} ./dist
+COPY --from=builder /workspace/dist/apps/${SERVICE_NAME} ./dist
 
-# Install only production deps
-COPY package*.json ./
-RUN npm install --omit=dev
-
-# Expose Nest port (each microservice usa su propio puerto)
+# variables/puerto por defecto
 ARG PORT=3000
 ENV PORT=${PORT}
 EXPOSE ${PORT}
 
-# Run service
+# set NODE_ENV para optimizaciones
+ENV NODE_ENV=production
+
+# comando por defecto
 CMD ["node", "dist/main.js"]

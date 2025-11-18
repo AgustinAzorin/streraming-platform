@@ -1,35 +1,35 @@
-# ----------------------------------------------------------
-# 1) BUILD stage
-# ----------------------------------------------------------
+# ---------- STAGE 1: BUILD ----------
 FROM node:20-alpine AS builder
 
-WORKDIR /app
+WORKDIR /workspace
+RUN apk add --no-cache python3 make g++ git
 
-COPY package*.json ./
-COPY nx.json ./
-COPY tsconfig.base.json ./
-
+COPY package.json package-lock.json ./
+COPY nx.json tsconfig.base.json ./
 COPY apps ./apps
 COPY libs ./libs
 
-RUN npm install
+RUN npm ci
 
 ARG SERVICE_NAME=frontend
-RUN npx nx build $SERVICE_NAME
+# Nx build para Next (genera .next en dist)
+RUN npx nx build ${SERVICE_NAME} --skip-nx-cache
 
-# ----------------------------------------------------------
-# 2) RUN stage (serve static export)
-# ----------------------------------------------------------
+# ---------- STAGE 2: RUN ----------
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Copy compiled Next.js output
-COPY --from=builder /app/dist/apps/frontend ./dist
+# instalar solo deps necesarias para start
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 
-# Static export serve
-RUN npm install -g serve
+ARG SERVICE_NAME=frontend
+COPY --from=builder /workspace/dist/apps/${SERVICE_NAME} ./dist
 
+ENV NODE_ENV=production
 EXPOSE 3000
 
-CMD ["serve", "-s", "dist"]
+# Next.js en Nx suele usar "node dist/main.js" si está configurado; si tu build usa next start, ajusta.
+# por lo general Nx crea un servidor que corre node dist/main.js
+CMD ["node", "dist/main.js"]

@@ -1,37 +1,35 @@
-# ----------------------------------------------------------
-# 1) BUILD STAGE
-# ----------------------------------------------------------
+# ---------- STAGE 1: BUILD ----------
 FROM node:20-alpine AS builder
 
-WORKDIR /app
+WORKDIR /workspace
+RUN apk add --no-cache python3 make g++ git
 
-COPY package*.json ./
-COPY nx.json ./
-COPY tsconfig.base.json ./
-
+COPY package.json package-lock.json ./
+COPY nx.json tsconfig.base.json ./
 COPY apps ./apps
 COPY libs ./libs
 
-RUN npm install
+RUN npm ci
 
 ARG SERVICE_NAME=video-processing-worker
-RUN npx nx build $SERVICE_NAME
+RUN npx nx build ${SERVICE_NAME} --skip-nx-cache
 
-# ----------------------------------------------------------
-# 2) RUNTIME STAGE (con ffmpeg)
-# ----------------------------------------------------------
+# ---------- STAGE 2: RUNTIME (ffmpeg + tools) ----------
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Install ffmpeg
-RUN apk add --no-cache ffmpeg
+# instalar dependencias de sistema (ffmpeg)
+RUN apk add --no-cache ffmpeg bash
 
-# Copy compiled worker
-COPY --from=builder /app/dist/apps/video-processing-worker ./dist
+# copiar build
+COPY --from=builder /workspace/dist/apps/video-processing-worker ./dist
 
-COPY package*.json ./
-RUN npm install --omit=dev
+# solo dependencias de prod
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
 
-# No expose (no HTTP)
+ENV NODE_ENV=production
+
+# el worker no necesita exponer puerto
 CMD ["node", "dist/main.js"]
