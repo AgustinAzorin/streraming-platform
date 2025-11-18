@@ -14,7 +14,14 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@streaming-platform/shared-types": ["shared-types/src/index.ts"],
+      "@streaming-platform/shared-utils": ["shared-utils/src/index.ts"],
+      "@streaming-platform/shared-auth": ["shared-auth/src/index.ts"],
+      "@streaming-platform/shared-config": ["shared-config/src/index.ts"],
+      "@streaming-platform/shared-dto": ["shared-dto/src/index.ts"],
+      "@streaming-platform/shared-prisma": ["shared-prisma/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

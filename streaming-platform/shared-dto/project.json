@@ -1,0 +1,19 @@
+{
+  "name": "shared-dto",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "shared-dto/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:swc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/shared-dto",
+        "main": "shared-dto/src/index.ts",
+        "tsConfig": "shared-dto/tsconfig.lib.json",
+        "assets": ["shared-dto/*.md"]
+      }
+    }
+  }
+}
